@@ -92,57 +92,66 @@
   // }
   //  await trytobe()
 
-  // //avec for
+  //avec for
 
-  //   const reqCourses = async (id) => {
-  //       try {
-  //           let queryC = await Course.findById(id);
-  //           return queryC;
-  //       }
-  //       catch (error) {
-  //           console.log(error.message);
-  //       }
-  //   }
+  const reqCourses = async (id) => {
+    try {
+      let queryC = await Course.findById(id);
+      return queryC;
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const reqStudents = async (id) => {
+    try {
+      let queryS = await Student.findById(id);
+      return queryS;
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+//   const reqCumul = async () => {
+//     try {
+//       let req = await Student.find({});
+//       let arrCourseId = [];
+//       // console.log(req);
+//       for (let j = 0; j < req.length; j++) {
+//         arrCourseId.push(req[j]._id);
+//       }
+//       // console.log(arrCourseId);
 
-  //   const reqCumul = async () => {
-  //       try {
-  //           let req = await Student.find({})
-  //           let arrCourseId = [];
-  //           // console.log(req);
-  //           for (let j = 0; j < req.length; j++) {
-  //               arrCourseId.push(req[j]._id);
-  //           }
-  //           console.log(arrCourseId);
-  //           for (let k = 0; k < arrCourseId.length; k++) {
-  //               let vol = 0;
-  //               let label = [];
-  //               let array = (await reqStudents(arrCourseId[k])).courses;
-  //               for (let i = 0; i < array.length; i++) {
-  //                   const element = array[i];
-  //                   label.push((await reqCourses(element)).label)
-  //                   vol += (await reqCourses(element)).volume;
-  //               }
-  //               console.log('________________________Student list_____________________________');
-  //               console.log("       Student : " + req[k].FirstName + " " + req[k].LastName);
-  //               console.log("       label : " + label);
-  //               console.log("       Volume Horaire : " + vol);
-  //           }
-  //       } catch (error) {
-  //           console.log(error.message)
-  //       }
-  //   }
-  //   const reqStudents = async (id) => {
-  //       try {
-  //           let queryS = await Student.findById(id);
-  //           return queryS;
-  //       } catch (error) {
-  //           console.log(error.message);
-  //       }
-  //   }
-  //   await reqCumul();
-
+//       for (let k = 0; k < arrCourseId.length; k++) {
+//         let vol = 0;
+//         let label = [];
+//         let array = (await reqStudents(arrCourseId[k])).courses;
+//         for (let i = 0; i < array.length; i++) {
+//           const element = array[i];
+//           label.push((await reqCourses(element)).label);
+//           vol += (await reqCourses(element)).volume;
+//         }
+//         // console.log(
+//         //   "________________________Student list_____________________________"
+//         // );
+//         // console.log(
+//         //   "       Student : " + req[k].FirstName + " " + req[k].LastName
+//         // );
+//         // console.log("       label : " + label);
+//         // console.log("       Volume Horaire : " + vol);
+//         return {
+//           firstname: req[k].FirstName,
+//           lastname: req[k].LastName,
+//           Label: label,
+//           Volumehoraire: vol,
+//         };
+//       }
+//     } catch (error) {
+//       console.log(error.message);
+//     }
+//   };
+// const ok = await reqCumul();
   const express = require("express");
   const fonctionsStudents = require("./lib/data.layer_student");
+  const fonctionsCourses = require("./lib/data.layer_courses");
   const app = express();
   const port = 3000;
   const host = "http://localhost";
@@ -171,24 +180,101 @@
       courses: ["61b7d2e6f70857323d791713", "61b7d31fd8d0b09506d6c7df"],
     };
 
-    const creer = await fonctionsStudents.creerStudent(student4)
+    const creer = await fonctionsStudents.creerStudent(student4);
 
     res.json(creer);
   });
   //Supprimer via l'id
   app.delete("/students/:id", async (req, res) => {
-   let  id =parseInt(req.params.id) ;
+    let id = parseInt(req.params.id);
     const delStudents = await fonctionsStudents.deleteStudents(id);
     res.json(delStudents);
   });
   app.patch("/students/:id", async (req, res) => {
-   let id =parseInt(req.params.id) ;
-     req.body = {
-       "FirstName":"Dazouda"
-     }
-    const upStudents = await fonctionsStudents.updateStudents(id,req.body);
+    let id = parseInt(req.params.id);
+    req.body = {
+      FirstName: "Dazouda",
+    };
+    const upStudents = await fonctionsStudents.updateStudents(id, req.body);
     res.json(upStudents);
   });
+
+  app.get("/courses", async (req, res) => {
+    const courses = await fonctionsCourses.listeCourse();
+    res.json(courses);
+  });
+
+  //retourner le participant dont l'id a été passé en paramétre
+  app.get("/courses/:id", async (req, res) => {
+    id = req.params.id;
+    const idCourses = await fonctionsCourses.idCourse(id);
+    res.json(idCourses);
+  });
+
+  //création nvx Student
+  app.post("/courses", async (req, res) => {
+    let course = {
+      id: "cours4",
+      label: "Anglais",
+      volume: 40,
+    };
+
+    const creer = await fonctionsCourses.creerCourse(course);
+
+    res.json(creer);
+  });
+  //Supprimer via l'id
+  app.delete("/courses/:id", async (req, res) => {
+    let id = parseInt(req.params.id);
+    const delCourses = await fonctionsCourses.deleteCourse(id);
+    res.json(delCourses);
+  });
+  app.patch("/courses/:id", async (req, res) => {
+    let id = parseInt(req.params.id);
+    req.body = {
+      label: "HTML5",
+    };
+    let upCourses = await fonctionsCourses.updateCourse(id, req.body);
+    res.json(upCourses);
+  });
+  //students et courses
+  app.get("/students/courses", async (req, res) => {
+    let obj={};
+    let querry = await Student.find({});
+      let arrCourseId = [];
+      // console.log(req);
+      for (let j = 0; j < querry.length; j++) {
+        arrCourseId.push(querry[j]._id);
+      }
+      // console.log(arrCourseId);
+
+      for (let k = 0; k < arrCourseId.length; k++) {
+        let vol = 0;
+        let label = [];
+        let array = (await reqStudents(arrCourseId[k])).courses;
+        for (let i = 0; i < array.length; i++) {
+          const element = array[i];
+          label.push((await reqCourses(element)).label);
+          vol += (await reqCourses(element)).volume;
+        }
+        // console.log(
+        //   "________________________Student list_____________________________"
+        // );
+        // console.log(
+        //   "       Student : " + req[k].FirstName + " " + req[k].LastName
+        // );
+        // console.log("       label : " + label);
+        // console.log("       Volume Horaire : " + vol);
+        return obj = {
+          firstname: querry[k].FirstName,
+          lastname: querry[k].LastName,
+          Label: label,
+          Volumehoraire: vol,
+        };
+      }
+    res.json(obj);
+  });
+
   app.listen(port, function () {
     console.log(`Server listening  on ${host}:${port}`);
   });
