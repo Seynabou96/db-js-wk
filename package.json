@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/script.js",
+    "startdev": "nodemon src/scripts.js",
     "serve": "parcel ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.17.1",
     "mongoose": "^6.1.0"
   }
 }
